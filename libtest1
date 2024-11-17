@@ -24,7 +24,7 @@ function HUDLibrary.new(title)
     local titleLabel = Instance.new("TextLabel")
     titleLabel.Size = UDim2.new(1, 0, 0.2, 0) -- Reduzido
     titleLabel.Position = UDim2.new(0, 0, 0, 0)
-    titleLabel.Text = title
+    titleLabel.Text = "Zeke Hub" -- Alterado o nome aqui
     titleLabel.Font = Enum.Font.SourceSansBold
     titleLabel.TextSize = 18 -- Reduzido
     titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
