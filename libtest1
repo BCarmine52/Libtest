@@ -9,7 +9,8 @@ function HUDLibrary.new(title)
 
     local mainFrame = Instance.new("Frame")
     mainFrame.Size = UDim2.new(0.25, 0, 0.3, 0) -- Reduzido
-    mainFrame.Position = UDim2.new(0.05, 0, 0.05, 0)
+    mainFrame.Position = UDim2.new(0.5, 0, 0.5, 0) -- Centralizado
+    mainFrame.AnchorPoint = Vector2.new(0.5, 0.5) -- Define o ponto de ancoragem para o centro
     mainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20) -- Preto escuro
     mainFrame.BackgroundTransparency = 0.6 -- 60% de transparência
     mainFrame.BorderSizePixel = 0
