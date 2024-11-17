@@ -24,9 +24,9 @@ function HUDLibrary.new(title)
     local titleLabel = Instance.new("TextLabel")
     titleLabel.Size = UDim2.new(1, 0, 0.2, 0) -- Reduzido
     titleLabel.Position = UDim2.new(0, 0, 0, 0)
-    titleLabel.Text = title
-    titleLabel.Font = Enum.Font.SourceSansBold
-    titleLabel.TextSize = 18 -- Reduzido
+    titleLabel.Text = "Zeke Hub" -- Título ajustado
+    titleLabel.Font = Enum.Font.GothamBold -- Fonte mais moderna e estilizada
+    titleLabel.TextSize = 20 -- Tamanho aumentado
     titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
     titleLabel.BackgroundColor3 = Color3.fromRGB(30, 30, 30) -- Fundo do título
     titleLabel.BackgroundTransparency = 0.6 -- Transparência do título
@@ -51,11 +51,13 @@ function HUDLibrary.new(title)
     minimizedLabel.Size = UDim2.new(1, 0, 1, 0)
     minimizedLabel.Position = UDim2.new(0, 0, 0, 0)
     minimizedLabel.Text = "Click Again to Appear"
-    minimizedLabel.Font = Enum.Font.SourceSans
-    minimizedLabel.TextSize = 18
+    minimizedLabel.Font = Enum.Font.GothamBlack -- Fonte estilizada
+    minimizedLabel.TextSize = 24 -- Tamanho maior
     minimizedLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
     minimizedLabel.BackgroundTransparency = 1
     minimizedLabel.Visible = false -- Começa invisível
+    minimizedLabel.TextStrokeTransparency = 0.5 -- Adiciona contorno
+    minimizedLabel.TextScaled = true
     minimizedLabel.Parent = mainFrame
 
     -- Função para alternar minimização
@@ -65,11 +67,13 @@ function HUDLibrary.new(title)
             -- Minimizar HUD
             contentFrame.Visible = false
             titleLabel.Visible = false
+            mainFrame.BackgroundTransparency = 1 -- 100% transparente
             minimizedLabel.Visible = true
         else
             -- Restaurar HUD
             contentFrame.Visible = true
             titleLabel.Visible = true
+            mainFrame.BackgroundTransparency = 0.6 -- Restaurar transparência original
             minimizedLabel.Visible = false
         end
     end
