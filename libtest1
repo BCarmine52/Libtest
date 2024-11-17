@@ -24,7 +24,7 @@ function HUDLibrary.new(title)
     local titleLabel = Instance.new("TextLabel")
     titleLabel.Size = UDim2.new(1, 0, 0.2, 0) -- Reduzido
     titleLabel.Position = UDim2.new(0, 0, 0, 0)
-    titleLabel.Text = "Zeke Hub" -- Alterado o nome aqui
+    titleLabel.Text = title
     titleLabel.Font = Enum.Font.SourceSansBold
     titleLabel.TextSize = 18 -- Reduzido
     titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -44,6 +44,42 @@ function HUDLibrary.new(title)
     contentFrame.Parent = mainFrame
 
     local elements = {}
+    local isMinimized = false -- Estado inicial da HUD
+
+    -- Mensagem de minimização
+    local minimizedLabel = Instance.new("TextLabel")
+    minimizedLabel.Size = UDim2.new(1, 0, 1, 0)
+    minimizedLabel.Position = UDim2.new(0, 0, 0, 0)
+    minimizedLabel.Text = "Click Again to Appear"
+    minimizedLabel.Font = Enum.Font.SourceSans
+    minimizedLabel.TextSize = 18
+    minimizedLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    minimizedLabel.BackgroundTransparency = 1
+    minimizedLabel.Visible = false -- Começa invisível
+    minimizedLabel.Parent = mainFrame
+
+    -- Função para alternar minimização
+    local function toggleMinimize()
+        isMinimized = not isMinimized
+        if isMinimized then
+            -- Minimizar HUD
+            contentFrame.Visible = false
+            titleLabel.Visible = false
+            minimizedLabel.Visible = true
+        else
+            -- Restaurar HUD
+            contentFrame.Visible = true
+            titleLabel.Visible = true
+            minimizedLabel.Visible = false
+        end
+    end
+
+    -- Detectar cliques no frame principal
+    mainFrame.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            toggleMinimize()
+        end
+    end)
 
     -- Métodos da HUD
     local hudAPI = {}
