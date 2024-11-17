@@ -1,0 +1,140 @@
+local HUDLibrary = {}
+
+function HUDLibrary.new(title)
+    -- Criar a HUD principal
+    local hud = Instance.new("ScreenGui")
+    hud.Name = title
+    hud.ResetOnSpawn = false
+    hud.Parent = game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui")
+
+    -- Criar o frame principal (HUD) com tamanho reduzido
+    local mainFrame = Instance.new("Frame")
+    mainFrame.Size = UDim2.new(0.25, 0, 0.2, 0) -- Tamanho ajustado, reduzido para um design mais compacto
+    mainFrame.Position = UDim2.new(0.5, 0, 0.5, 0) -- Centralizado na tela
+    mainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+    mainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+    mainFrame.BackgroundTransparency = 0.5 -- Transparência reduzida
+    mainFrame.BorderSizePixel = 0
+    mainFrame.Parent = hud
+
+    -- Adicionar contorno RGB
+    local uiStroke = Instance.new("UIStroke")
+    uiStroke.Thickness = 3 -- Espessura da borda
+    uiStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    uiStroke.Parent = mainFrame
+
+    -- Adicionar cantos arredondados ao contorno da HUD
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, 15) -- Arredondamento suave
+    corner.Parent = mainFrame
+
+    -- Criar um container para o título
+    local titleFrame = Instance.new("Frame")
+    titleFrame.Size = UDim2.new(1, 0, 0.2, 0) -- O título ocupa 20% da altura da HUD
+    titleFrame.Position = UDim2.new(0, 0, 0, 0) -- Fica no topo
+    titleFrame.BackgroundTransparency = 1 -- Fundo do título transparente
+    titleFrame.LayoutOrder = 0
+    titleFrame.Parent = mainFrame
+
+    -- Criar o título
+    local titleLabel = Instance.new("TextLabel")
+    titleLabel.Size = UDim2.new(1, 0, 1, 0) -- Tamanho do título ocupa toda a largura e altura do container
+    titleLabel.Position = UDim2.new(0, 0, 0, 0) -- Fica alinhado ao topo do container
+    titleLabel.Text = title
+    titleLabel.Font = Enum.Font.FredokaOne -- Fonte arredondada e estilosa
+    titleLabel.TextSize = 40 -- Tamanho ajustado para o título
+    titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255) -- Cor inicial (será alterada pelo script RGB)
+    titleLabel.TextStrokeTransparency = 0.8 -- Sombra sutil no texto
+    titleLabel.BackgroundTransparency = 1 -- Título transparente
+    titleLabel.Parent = titleFrame
+
+    -- Script para animar a cor RGB do título
+    spawn(function()
+        local hue = 0
+        while true do
+            hue = (hue + 3) % 360 -- Incremento mais rápido no hue
+            local color = Color3.fromHSV(hue / 360, 1, 1)
+            uiStroke.Color = color
+            titleLabel.TextColor3 = color
+            wait(0.03) -- Tempo de espera reduzido para maior velocidade
+        end
+    end)
+
+    -- Criar container para os elementos da HUD
+    local contentFrame = Instance.new("Frame")
+    contentFrame.Size = UDim2.new(1, 0, 0.8, 0) -- Espaço ajustado para os elementos abaixo do título
+    contentFrame.Position = UDim2.new(0, 0, 0.2, 0) -- Informações abaixo do título
+    contentFrame.BackgroundTransparency = 1
+    contentFrame.Parent = mainFrame
+
+    -- Adicionar sistema de layout vertical para os elementos
+    local layout = Instance.new("UIListLayout")
+    layout.SortOrder = Enum.SortOrder.LayoutOrder
+    layout.Padding = UDim.new(0, 10) -- Espaçamento vertical entre linhas
+    layout.Parent = contentFrame
+
+    local elements = {}
+
+    -- Métodos da HUD
+    local hudAPI = {}
+
+    function hudAPI:addLabel(name, defaultText)
+        local label = Instance.new("TextLabel")
+        label.Name = name
+        label.Size = UDim2.new(1, 0, 0.15, 0) -- Proporção ajustada
+        label.Text = defaultText
+        label.Font = Enum.Font.FredokaOne -- Fonte estilosa
+        label.TextSize = 40 -- Tamanho da fonte grande mantido
+        label.TextColor3 = Color3.fromRGB(255, 255, 255)
+        label.TextStrokeTransparency = 0.8 -- Sombra sutil no texto
+        label.BackgroundTransparency = 1
+        label.LayoutOrder = #elements + 1 -- Define a ordem no layout
+        label.Parent = contentFrame
+
+        elements[name] = label
+    end
+
+    function hudAPI:addHorizontalGroup(name, items)
+        local groupFrame = Instance.new("Frame")
+        groupFrame.Size = UDim2.new(1, 0, 0.15, 0) -- Cada linha ocupa menos espaço
+        groupFrame.BackgroundTransparency = 1
+        groupFrame.LayoutOrder = #elements + 1 -- Adiciona ao layout vertical
+        groupFrame.Parent = contentFrame
+
+        -- Layout horizontal para os itens dentro da linha
+        local horizontalLayout = Instance.new("UIListLayout")
+        horizontalLayout.FillDirection = Enum.FillDirection.Horizontal
+        horizontalLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+        horizontalLayout.SortOrder = Enum.SortOrder.LayoutOrder
+        horizontalLayout.Padding = UDim.new(0, 30) -- Espaçamento entre contadores mantido
+        horizontalLayout.Parent = groupFrame
+
+        for _, item in ipairs(items) do
+            local label = Instance.new("TextLabel")
+            label.Name = item.name
+            label.Size = UDim2.new(0.22, 0, 1, 0) -- Compacto lateralmente
+            label.Text = item.text -- Emoji e número juntos
+            label.Font = Enum.Font.FredokaOne -- Fonte estilosa
+            label.TextSize = 40 -- Fonte grande mantida
+            label.TextColor3 = Color3.fromRGB(255, 255, 255)
+            label.TextStrokeTransparency = 0.8 -- Sombra sutil no texto
+            label.BackgroundTransparency = 1
+            label.LayoutOrder = item.order
+            label.Parent = groupFrame
+
+            elements[item.name] = label
+        end
+    end
+
+    function hudAPI:updateLabel(name, newText)
+        if elements[name] then
+            elements[name].Text = newText
+        else
+            warn("Elemento não encontrado na HUD: " .. name)
+        end
+    end
+
+    return hudAPI
+end
+
+return HUDLibrary
