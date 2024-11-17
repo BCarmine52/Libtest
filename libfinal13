@@ -1,0 +1,107 @@
+local HUDLibrary = loadstring(game:HttpGet("https://raw.githubusercontent.com/BCarmine52/Libtest/refs/heads/main/libfinal12"))()
+
+-- Criar a HUD com o título "Zeke Hub"
+local hud = HUDLibrary.new("Zeke Hub")
+
+-- Variáveis para armazenar as informações
+local player = game.Players.LocalPlayer -- Pega o jogador local
+local startTime = os.time() -- Armazena o tempo de início
+local money = 0
+local eggs = 0
+local potions = 0
+local greenBalls = 0
+local purpleBalls = 0
+
+-- Adicionar o nome do jogador
+hud:addLabel("playerName", player.Name) -- Nome do jogador
+
+-- Adicionar grupo horizontal com dinheiro, ovos e poções
+hud:addHorizontalGroup("row1", {
+    { name = "money", text = "💰 00", order = 1 },
+    { name = "eggs", text = "🥚 00", order = 2 },
+    { name = "potions", text = "🧪 00", order = 3 }
+})
+
+-- Adicionar grupo horizontal com bolas verdes e roxas
+hud:addHorizontalGroup("row2", {
+    { name = "greenBalls", text = "🟢 00", order = 1 },
+    { name = "purpleBalls", text = "🟣 00", order = 2 }
+})
+
+-- Adicionar o tempo de execução
+hud:addLabel("executionTime", "⏰ 00:00:00") -- Relógio inicial
+
+-- Função para ajustar o formato do dinheiro
+local function formatMoney(value)
+    local emoji = "💰"
+    local formattedValue = tostring(value)
+    return emoji .. " " .. formattedValue
+end
+
+-- Função para calcular o espaçamento com base no número de dígitos
+local function adjustMoneySpacing(value)
+    local digitCount = #tostring(value)
+    if digitCount == 1 then
+        return UDim2.new(0.30, 0, 0.15, 0) -- Posição inicial
+    elseif digitCount == 2 then
+        return UDim2.new(0.27, 0, 0.15, 0) -- Ajuste menor
+    elseif digitCount == 3 then
+        return UDim2.new(0.24, 0, 0.15, 0) -- Ajuste para 3 dígitos
+    elseif digitCount == 4 then
+        return UDim2.new(0.12, 0, 0.15, 0) -- Ajuste maior para 4 dígitos
+    elseif digitCount >= 5 then
+        return UDim2.new(0.05, 0, 0.15, 0) -- Ajuste maior para 5 ou mais dígitos
+    end
+end
+
+-- Função para formatar o tempo no formato HH:MM:SS
+local function formatTime(elapsed)
+    local hours = math.floor(elapsed / 3600)
+    local minutes = math.floor((elapsed % 3600) / 60)
+    local seconds = elapsed % 60
+    return string.format("⏰ %02d:%02d:%02d", hours, minutes, seconds)
+end
+
+-- Função para simular ganhos
+local function simulateGains()
+    money = money + math.random(500, 1000) -- Incremento dinâmico de 500 a 1000
+    if math.random(1, 5) == 1 then
+        eggs = eggs + 100
+    end
+    if math.random(1, 8) == 1 then
+        potions = potions + 1
+    end
+    if math.random(1, 6) == 1 then
+        greenBalls = greenBalls + 1
+    end
+    if math.random(1, 10) == 1 then
+        purpleBalls = purpleBalls + 1
+    end
+end
+
+-- Atualizar as informações dinamicamente
+spawn(function()
+    while true do
+        wait(1) -- Atualizar a cada segundo
+
+        -- Simular ganhos
+        simulateGains()
+
+        -- Calcular tempo de execução
+        local elapsedTime = os.time() - startTime
+
+        -- Atualizar os valores na HUD
+        hud:updateLabel("money", formatMoney(money)) -- Atualiza o dinheiro
+        hud:updateLabel("eggs", "🥚 " .. string.format("%02d", eggs))
+        hud:updateLabel("potions", "🧪 " .. string.format("%02d", potions))
+        hud:updateLabel("greenBalls", "🟢 " .. string.format("%02d", greenBalls))
+        hud:updateLabel("purpleBalls", "🟣 " .. string.format("%02d", purpleBalls))
+        hud:updateLabel("executionTime", formatTime(elapsedTime)) -- Atualizar o relógio
+
+        -- Ajustar o espaçamento do dinheiro com base nos dígitos
+        local moneyLabel = hud:getLabel("money") -- Obtém a label do dinheiro
+        if moneyLabel then
+            moneyLabel.Position = adjustMoneySpacing(money) -- Ajusta a posição de acordo com os dígitos
+        end
+    end
+end)
