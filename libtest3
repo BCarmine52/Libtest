@@ -1,0 +1,115 @@
+local HUDLibrary = {}
+
+function HUDLibrary.new(title)
+    -- Criar a HUD principal
+    local hud = Instance.new("ScreenGui")
+    hud.Name = title
+    hud.ResetOnSpawn = false
+    hud.Parent = game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui")
+
+    local mainFrame = Instance.new("Frame")
+    mainFrame.Size = UDim2.new(0.25, 0, 0.3, 0) -- Reduzido
+    mainFrame.Position = UDim2.new(0.5, 0, 0.5, 0) -- Centralizado
+    mainFrame.AnchorPoint = Vector2.new(0.5, 0.5) -- Define o ponto de ancoragem para o centro
+    mainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20) -- Preto escuro
+    mainFrame.BackgroundTransparency = 0.6 -- 60% de transparência
+    mainFrame.BorderSizePixel = 0
+    mainFrame.Parent = hud
+
+    -- Adicionar cantos arredondados
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, 10) -- Ajusta o arredondamento
+    corner.Parent = mainFrame
+
+    local titleLabel = Instance.new("TextLabel")
+    titleLabel.Size = UDim2.new(1, 0, 0.2, 0) -- Reduzido
+    titleLabel.Position = UDim2.new(0, 0, 0, 0)
+    titleLabel.Text = "Zeke Hub" -- Título ajustado
+    titleLabel.Font = Enum.Font.Gotham -- Fonte elegante e moderna
+    titleLabel.TextSize = 20 -- Tamanho ajustado
+    titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    titleLabel.BackgroundColor3 = Color3.fromRGB(30, 30, 30) -- Fundo do título
+    titleLabel.BackgroundTransparency = 0.6 -- Transparência do título
+    titleLabel.Parent = mainFrame
+
+    -- Adicionar cantos arredondados ao título
+    local titleCorner = Instance.new("UICorner")
+    titleCorner.CornerRadius = UDim.new(0, 10) -- Mesmo arredondamento
+    titleCorner.Parent = titleLabel
+
+    local contentFrame = Instance.new("Frame")
+    contentFrame.Size = UDim2.new(1, 0, 0.8, 0) -- Reduzido
+    contentFrame.Position = UDim2.new(0, 0, 0.2, 0)
+    contentFrame.BackgroundTransparency = 1
+    contentFrame.Parent = mainFrame
+
+    local elements = {}
+    local isMinimized = false -- Estado inicial da HUD
+
+    -- Mensagem de minimização
+    local minimizedLabel = Instance.new("TextLabel")
+    minimizedLabel.Size = UDim2.new(1, 0, 0.15, 0) -- Reduzido para tamanho moderado
+    minimizedLabel.Position = UDim2.new(0, 0, 0.425, 0) -- Ajustado para o centro do frame
+    minimizedLabel.Text = "Click Again to Appear"
+    minimizedLabel.Font = Enum.Font.GothamMedium -- Fonte mais bonita e elegante
+    minimizedLabel.TextSize = 16 -- Tamanho menor e mais proporcional
+    minimizedLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    minimizedLabel.BackgroundTransparency = 1
+    minimizedLabel.Visible = false -- Começa invisível
+    minimizedLabel.TextStrokeTransparency = 0.6 -- Adiciona contorno leve
+    minimizedLabel.TextScaled = false -- Desativada escala automática
+    minimizedLabel.Parent = mainFrame
+
+    -- Função para alternar minimização
+    local function toggleMinimize()
+        isMinimized = not isMinimized
+        if isMinimized then
+            -- Minimizar HUD
+            contentFrame.Visible = false
+            titleLabel.Visible = false
+            mainFrame.BackgroundTransparency = 1 -- 100% transparente
+            minimizedLabel.Visible = true
+        else
+            -- Restaurar HUD
+            contentFrame.Visible = true
+            titleLabel.Visible = true
+            mainFrame.BackgroundTransparency = 0.6 -- Restaurar transparência original
+            minimizedLabel.Visible = false
+        end
+    end
+
+    -- Detectar cliques no frame principal
+    mainFrame.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            toggleMinimize()
+        end
+    end)
+
+    -- Métodos da HUD
+    local hudAPI = {}
+
+    function hudAPI:addLabel(name, defaultText)
+        local label = Instance.new("TextLabel")
+        label.Name = name
+        label.Size = UDim2.new(1, 0, 0.2, 0)
+        label.Position = UDim2.new(0, 0, #elements * 0.2, 0)
+        label.Text = defaultText
+        label.Font = Enum.Font.Gotham -- Fonte consistente
+        label.TextSize = 16 -- Ajustado para consistência
+        label.TextColor3 = Color3.fromRGB(255, 255, 255)
+        label.BackgroundTransparency = 1
+        label.Parent = contentFrame
+
+        elements[name] = label
+    end
+
+    function hudAPI:updateLabel(name, newText)
+        if elements[name] then
+            elements[name].Text = newText
+        end
+    end
+
+    return hudAPI
+end
+
+return HUDLibrary
