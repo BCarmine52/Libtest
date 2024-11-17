@@ -1,0 +1,71 @@
+local HUDLibrary = {}
+
+function HUDLibrary.new(title)
+    -- Criar a HUD principal
+    local hud = Instance.new("ScreenGui")
+    hud.Name = title
+    hud.ResetOnSpawn = false
+    hud.Parent = game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui")
+
+    local mainFrame = Instance.new("Frame")
+    mainFrame.Size = UDim2.new(0.25, 0, 0.4, 0) -- Ajustado para comportar mais elementos
+    mainFrame.Position = UDim2.new(0.5, 0, 0.5, 0) -- Centralizado
+    mainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+    mainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+    mainFrame.BackgroundTransparency = 0.6
+    mainFrame.BorderSizePixel = 0
+    mainFrame.Parent = hud
+
+    -- Adicionar cantos arredondados
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, 10)
+    corner.Parent = mainFrame
+
+    -- Adicionar sistema de layout automático
+    local layout = Instance.new("UIListLayout")
+    layout.SortOrder = Enum.SortOrder.LayoutOrder
+    layout.Padding = UDim.new(0, 5) -- Espaçamento entre elementos
+    layout.Parent = mainFrame
+
+    -- Criar o título
+    local titleLabel = Instance.new("TextLabel")
+    titleLabel.Size = UDim2.new(1, 0, 0.1, 0) -- Proporção reduzida
+    titleLabel.Text = title
+    titleLabel.Font = Enum.Font.FredokaOne -- Fonte arredondada e estilosa
+    titleLabel.TextSize = 20
+    titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    titleLabel.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    titleLabel.BackgroundTransparency = 0.6
+    titleLabel.LayoutOrder = 0 -- Sempre no topo
+    titleLabel.Parent = mainFrame
+
+    local elements = {}
+
+    -- Métodos da HUD
+    local hudAPI = {}
+
+    function hudAPI:addLabel(name, defaultText)
+        local label = Instance.new("TextLabel")
+        label.Name = name
+        label.Size = UDim2.new(1, 0, 0.1, 0) -- Tamanho consistente
+        label.Text = defaultText
+        label.Font = Enum.Font.FredokaOne -- Fonte arredondada e estilosa
+        label.TextSize = 18
+        label.TextColor3 = Color3.fromRGB(255, 255, 255)
+        label.BackgroundTransparency = 1
+        label.LayoutOrder = #elements + 1 -- Define a ordem no layout
+        label.Parent = mainFrame
+
+        elements[name] = label
+    end
+
+    function hudAPI:updateLabel(name, newText)
+        if elements[name] then
+            elements[name].Text = newText
+        end
+    end
+
+    return hudAPI
+end
+
+return HUDLibrary
