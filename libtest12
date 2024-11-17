@@ -1,0 +1,102 @@
+local HUDLibrary = {}
+
+function HUDLibrary.new(title)
+    -- Criar a HUD principal
+    local hud = Instance.new("ScreenGui")
+    hud.Name = title
+    hud.ResetOnSpawn = false
+    hud.Parent = game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui")
+
+    local mainFrame = Instance.new("Frame")
+    mainFrame.Size = UDim2.new(0.25, -100, 0.2, 0) -- HUD menor (reduzida em 100 pixels na largura)
+    mainFrame.Position = UDim2.new(0.5, 0, 0.5, -20) -- Centralizado e levemente elevado
+    mainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+    mainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+    mainFrame.BackgroundTransparency = 0.6
+    mainFrame.BorderSizePixel = 0
+    mainFrame.Parent = hud
+
+    -- Adicionar cantos arredondados
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, 15) -- Arredondamento suave
+    corner.Parent = mainFrame
+
+    -- Adicionar sistema de layout vertical
+    local layout = Instance.new("UIListLayout")
+    layout.SortOrder = Enum.SortOrder.LayoutOrder
+    layout.Padding = UDim.new(0, 10) -- Espaçamento vertical
+    layout.Parent = mainFrame
+
+    -- Criar o título
+    local titleLabel = Instance.new("TextLabel")
+    titleLabel.Size = UDim2.new(1, 0, 0.15, 0) -- Proporção ajustada
+    titleLabel.Text = title
+    titleLabel.Font = Enum.Font.FredokaOne -- Fonte arredondada e estilosa
+    titleLabel.TextSize = 30 -- Tamanho grande
+    titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    titleLabel.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    titleLabel.BackgroundTransparency = 0.6
+    titleLabel.LayoutOrder = 0 -- Sempre no topo
+    titleLabel.Parent = mainFrame
+
+    local elements = {}
+
+    -- Métodos da HUD
+    local hudAPI = {}
+
+    function hudAPI:addLabel(name, defaultText)
+        local label = Instance.new("TextLabel")
+        label.Name = name
+        label.Size = UDim2.new(1, 0, 0.15, 0) -- Proporção ajustada
+        label.Text = defaultText
+        label.Font = Enum.Font.FredokaOne -- Fonte estilosa
+        label.TextSize = 40 -- Tamanho da fonte grande mantido
+        label.TextColor3 = Color3.fromRGB(255, 255, 255)
+        label.BackgroundTransparency = 1
+        label.LayoutOrder = #elements + 1 -- Define a ordem no layout
+        label.Parent = mainFrame
+
+        elements[name] = label
+    end
+
+    function hudAPI:addHorizontalGroup(name, items)
+        local groupFrame = Instance.new("Frame")
+        groupFrame.Size = UDim2.new(1, 0, 0.15, 0) -- Cada linha ocupa menos espaço
+        groupFrame.BackgroundTransparency = 1
+        groupFrame.LayoutOrder = #elements + 1 -- Adiciona ao layout vertical
+        groupFrame.Parent = mainFrame
+
+        -- Layout horizontal para os itens dentro da linha
+        local horizontalLayout = Instance.new("UIListLayout")
+        horizontalLayout.FillDirection = Enum.FillDirection.Horizontal
+        horizontalLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+        horizontalLayout.SortOrder = Enum.SortOrder.LayoutOrder
+        horizontalLayout.Padding = UDim.new(0, 2) -- Reduzido para compactar os itens
+        horizontalLayout.Parent = groupFrame
+
+        for _, item in ipairs(items) do
+            local label = Instance.new("TextLabel")
+            label.Name = item.name
+            label.Size = UDim2.new(0.22, 0, 1, 0) -- Mais compacto lateralmente
+            label.Text = item.text
+            label.Font = Enum.Font.FredokaOne -- Fonte estilosa
+            label.TextSize = 40 -- Fonte grande mantida
+            label.TextColor3 = Color3.fromRGB(255, 255, 255)
+            label.BackgroundTransparency = 1
+            label.LayoutOrder = item.order
+            label.Parent = groupFrame
+
+            elements[name] = label
+        end
+    end
+
+    function hudAPI:updateLabel(name, newText)
+        if elements[name] then
+            elements[name].Text = newText
+        end
+    end
+
+    return hudAPI
+end
+
+return HUDLibrary
